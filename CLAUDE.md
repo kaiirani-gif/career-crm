@@ -19,7 +19,7 @@ Personal job-search CRM styled as an institutional deal-pipeline tool. British E
 - Dashboard suggestions are deterministic SQL rules, not AI.
 
 ## Auth
-- Emailed one-time code (not magic link — iOS home-screen apps don't share Safari's cookies). `shouldCreateUser: false`; the single user is created in the Supabase dashboard.
+- Email + password. Not magic links (iOS home-screen apps don't share Safari's cookies) and not emailed codes (the free plan's built-in email service doesn't allow editing templates). The single user is created in the Supabase dashboard; the app has no sign-up.
 - Without env vars the app runs in preview mode (no login, nothing saved).
 
 ## Build sequence
