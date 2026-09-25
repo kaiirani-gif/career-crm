@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens.
+ * Restrained palette: warm neutrals, one muted navy accent, and red reserved
+ * for overdue items. Every colour used in the app should come from here.
+ */
+:root {
+  --bg: #f6f6f4;
+  --surface: #ffffff;
+  --surface-2: #f0f0ed;
+  --border: #e3e3df;
+  --border-strong: #cfcfca;
+  --text: #16181d;
+  --text-2: #565a62;
+  --text-3: #8a8e95;
+  --accent: #1f3a5f;
+  --accent-soft: #e7ecf3;
+  --danger: #b42318;
+  --danger-soft: #fbebe9;
+  --warn: #8a5a00;
+  --warn-soft: #f8f0dd;
+  --positive: #1e6a47;
+  --positive-soft: #e5f1ea;
+  --focus: #3b6ea8;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0e10;
+    --surface: #15171a;
+    --surface-2: #1b1e22;
+    --border: #272a2f;
+    --border-strong: #353940;
+    --text: #e8e9eb;
+    --text-2: #a3a7ae;
+    --text-3: #6d727a;
+    --accent: #93b2db;
+    --accent-soft: #1a2433;
+    --danger: #ef7a70;
+    --danger-soft: #331a18;
+    --warn: #e0b45c;
+    --warn-soft: #2e2615;
+    --positive: #6fc59a;
+    --positive-soft: #15281f;
+    --focus: #93b2db;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+
+  /* SF Pro on Apple devices, Segoe UI Variable on Windows. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
+  font-feature-settings: "cv11", "ss01";
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Dates, counts and amounts line up in columns. */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small uppercase label used for section headings and table headers. */
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* Space for the iPhone home indicator under the bottom tab bar. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
