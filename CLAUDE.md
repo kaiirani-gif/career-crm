@@ -22,5 +22,10 @@ Personal job-search CRM styled as an institutional deal-pipeline tool. British E
 - Email + password. Not magic links (iOS home-screen apps don't share Safari's cookies) and not emailed codes (the free plan's built-in email service doesn't allow editing templates). The single user is created in the Supabase dashboard; the app has no sign-up.
 - Without env vars the app runs in preview mode (no login, nothing saved).
 
+## Deployment
+- GitHub `kaiirani-gif/career-crm` (branch `main`) → Vercel project `career-crm` → https://career-crm-jade.vercel.app. Pushing to `main` deploys.
+- Vercel env vars `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` must be type **Config**, not Secret: Vercel withholds secret values from `NEXT_PUBLIC_` variables, which silently puts the app in preview mode.
+- Regenerate types after a migration: `npm run db:types`. Self-referencing embeds (e.g. people → introducer) are typed as arrays; normalise with `one()` from `lib/form-data`.
+
 ## Build sequence
-1 Foundation ✓ → 2 Directory → 3 Timeline & tasks → 4 Meetings & debrief → 5 Today dashboard → 6 Opportunities → 7 Research → 8 Meeting brief → 9 Documents & search → 10 Mobile polish.
+1 Foundation ✓ → 2 Directory ✓ → 3 Timeline & tasks → 4 Meetings & debrief → 5 Today dashboard → 6 Opportunities → 7 Research → 8 Meeting brief → 9 Documents & search → 10 Mobile polish.
