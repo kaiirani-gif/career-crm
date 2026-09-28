@@ -3,6 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Empty, PageHeader, Section } from "@/components/ui/primitives";
 import { FORMAL_STAGES, RELATIONSHIP_STAGES, SPECULATIVE_STAGES } from "@/lib/domain";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Today" };
 
@@ -16,6 +17,17 @@ export default async function TodayPage() {
     month: "long",
     timeZone: "Europe/London",
   }).format(new Date());
+
+  const supabase = await createClient();
+  const [{ data: people }, { data: opportunities }] = await Promise.all([
+    supabase.from("people").select("relationship_stage").is("archived_at", null),
+    supabase.from("opportunities").select("kind, stage").is("archived_at", null).eq("state", "open"),
+  ]);
+  const count = (values: string[]) =>
+    values.reduce<Record<string, number>>((acc, v) => ((acc[v] = (acc[v] ?? 0) + 1), acc), {});
+  const networking = count((people ?? []).map((p) => p.relationship_stage));
+  const speculative = count((opportunities ?? []).filter((o) => o.kind === "speculative").map((o) => o.stage));
+  const formal = count((opportunities ?? []).filter((o) => o.kind === "formal").map((o) => o.stage));
 
   return (
     <>
@@ -44,9 +56,10 @@ export default async function TodayPage() {
               <StageBars
                 heading="Networking"
                 stages={RELATIONSHIP_STAGES.filter((s) => s.value !== "dormant")}
+                counts={networking}
               />
-              <StageBars heading="Speculative" stages={SPECULATIVE_STAGES} />
-              <StageBars heading="Formal" stages={FORMAL_STAGES} />
+              <StageBars heading="Speculative" stages={SPECULATIVE_STAGES} counts={speculative} />
+              <StageBars heading="Formal" stages={FORMAL_STAGES} counts={formal} />
             </Section>
             <Section title="Research" count={0}>
               <Empty>No new reports or roles.</Empty>
@@ -58,18 +71,32 @@ export default async function TodayPage() {
   );
 }
 
-function StageBars({ heading, stages }: { heading: string; stages: readonly { value: string; label: string }[] }) {
+function StageBars({
+  heading,
+  stages,
+  counts,
+}: {
+  heading: string;
+  stages: readonly { value: string; label: string }[];
+  counts: Record<string, number>;
+}) {
+  const max = Math.max(1, ...stages.map((s) => counts[s.value] ?? 0));
   return (
     <div className="border-b border-border px-4 py-3 last:border-b-0">
       <p className="mb-2 text-[12px] font-medium text-text-2">{heading}</p>
       <ul className="space-y-1">
-        {stages.map((s) => (
-          <li key={s.value} className="grid grid-cols-[8.5rem_1fr_1.5rem] items-center gap-3 text-[12px]">
-            <span className="truncate text-text-2">{s.label}</span>
-            <span className="h-1.5 rounded-full bg-surface-2" />
-            <span className="num text-right text-text-3">0</span>
-          </li>
-        ))}
+        {stages.map((s) => {
+          const n = counts[s.value] ?? 0;
+          return (
+            <li key={s.value} className="grid grid-cols-[8.5rem_1fr_1.5rem] items-center gap-3 text-[12px]">
+              <span className="truncate text-text-2">{s.label}</span>
+              <span className="h-1.5 overflow-hidden rounded-full bg-surface-2">
+                <span className="block h-full rounded-full bg-accent" style={{ width: `${(n / max) * 100}%` }} />
+              </span>
+              <span className={n ? "num text-right text-text" : "num text-right text-text-3"}>{n}</span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -75,28 +75,41 @@ export function Segmented({ items, active }: { items: { href: string; label: str
   );
 }
 
-// Compact data table with sticky, uppercase column headings.
-export function DataTable({ columns, empty }: { columns: string[]; empty: React.ReactNode }) {
+// Underlined tabs for record pages; scroll sideways on the phone.
+export function Tabs({ items, active }: { items: { href: string; label: string; value: string; count?: number }[]; active: string }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[560px] border-collapse text-left">
-        <thead>
-          <tr className="border-b border-border">
-            {columns.map((c) => (
-              <th key={c} className="label px-4 py-2 font-semibold">
-                {c}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colSpan={columns.length}>
-              <Empty>{empty}</Empty>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <nav className="-mx-4 mb-4 overflow-x-auto border-b border-border px-4 md:mx-0 md:px-0">
+      <ul className="flex gap-5">
+        {items.map((item) => (
+          <li key={item.value}>
+            <Link
+              href={item.href}
+              scroll={false}
+              className={clsx(
+                "-mb-px flex items-center gap-1.5 whitespace-nowrap border-b-2 py-2 text-[13px]",
+                item.value === active ? "border-accent font-medium text-text" : "border-transparent text-text-2 hover:text-text",
+              )}
+            >
+              {item.label}
+              {item.count !== undefined && item.count > 0 && <span className="num text-[11px] text-text-3">{item.count}</span>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+// Label / value rows for record details.
+export function Details({ rows }: { rows: { label: string; value: React.ReactNode }[] }) {
+  return (
+    <dl className="divide-y divide-border">
+      {rows.map((r) => (
+        <div key={r.label} className="grid grid-cols-[8.5rem_1fr] gap-3 px-4 py-2.5 text-[13px]">
+          <dt className="text-text-3">{r.label}</dt>
+          <dd className="min-w-0 break-words">{r.value || <span className="text-text-3">—</span>}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

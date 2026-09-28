@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import clsx from "clsx";
 import { signOut } from "@/app/login/actions";
 import { CaptureMenu } from "./capture-menu";
@@ -47,6 +47,16 @@ export function AppShell({ children, email, preview }: Props) {
           })}
         </nav>
         <div className="mt-auto space-y-2 px-1.5">
+          <Link
+            href="/settings"
+            className={clsx(
+              "-mx-1.5 flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px]",
+              pathname.startsWith("/settings") ? "bg-surface font-medium text-text" : "text-text-2 hover:text-text",
+            )}
+          >
+            <Settings size={16} strokeWidth={1.75} />
+            Settings
+          </Link>
           {preview && <PreviewBadge />}
           {email && (
             <form action={signOut} className="flex items-center gap-2">
@@ -64,16 +74,14 @@ export function AppShell({ children, email, preview }: Props) {
         <header className="pt-safe sticky top-0 z-30 border-b border-border bg-bg/90 backdrop-blur md:hidden">
           <div className="flex h-11 items-center gap-2 px-4">
             <Mark />
-            <h1 className="text-[17px] font-semibold tracking-tight">{current?.label ?? "Career CRM"}</h1>
+            <h1 className="text-[17px] font-semibold tracking-tight">
+              {current?.label ?? (pathname.startsWith("/settings") ? "Settings" : "Career CRM")}
+            </h1>
             {preview && <PreviewBadge />}
             <div className="ml-auto flex items-center">
-              {email && (
-                <form action={signOut}>
-                  <button type="submit" aria-label="Sign out" className="flex h-9 w-9 items-center justify-center text-text-3">
-                    <LogOut size={17} />
-                  </button>
-                </form>
-              )}
+              <Link href="/settings" aria-label="Settings" className="flex h-9 w-9 items-center justify-center text-text-3">
+                <Settings size={18} />
+              </Link>
               <CaptureMenu variant="topbar" />
             </div>
           </div>

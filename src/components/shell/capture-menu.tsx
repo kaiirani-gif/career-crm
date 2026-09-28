@@ -2,22 +2,31 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Briefcase, Building2, CalendarPlus, CheckSquare, NotebookPen, Plus, UserPlus } from "lucide-react";
 import clsx from "clsx";
 
-// Quick capture, reachable from every screen. Items are enabled as each build
-// step lands.
+// Quick capture, reachable from every screen. Items without an href are
+// enabled as each build step lands.
 const CAPTURE_ITEMS = [
-  { label: "Meeting", icon: CalendarPlus },
-  { label: "Note", icon: NotebookPen },
-  { label: "Task", icon: CheckSquare },
-  { label: "Person", icon: UserPlus },
-  { label: "Company", icon: Building2 },
-  { label: "Opportunity", icon: Briefcase },
+  { label: "Meeting", icon: CalendarPlus, href: null },
+  { label: "Note", icon: NotebookPen, href: null },
+  { label: "Task", icon: CheckSquare, href: null },
+  { label: "Person", icon: UserPlus, href: "/people/new" },
+  { label: "Company", icon: Building2, href: "/companies/new" },
+  { label: "Opportunity", icon: Briefcase, href: null },
 ] as const;
+
+const itemClass = "flex w-full items-center gap-3 px-4 py-3 text-left text-[15px] md:py-2 md:text-[13px]";
 
 export function CaptureMenu({ variant }: { variant: "sidebar" | "topbar" }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // On a company page, a new person is pre-filled with that company.
+  const companyId = pathname.match(/^\/companies\/([0-9a-f-]{36})/)?.[1];
+  const hrefFor = (href: string) => (href === "/people/new" && companyId ? `${href}?company=${companyId}` : href);
 
   useEffect(() => {
     if (!open) return;
@@ -69,17 +78,20 @@ export function CaptureMenu({ variant }: { variant: "sidebar" | "topbar" }) {
             <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-border-strong md:hidden" />
             <p className="label px-4 pb-1 pt-3">New</p>
             <ul className="pb-2">
-              {CAPTURE_ITEMS.map(({ label, icon: Icon }) => (
+              {CAPTURE_ITEMS.map(({ label, icon: Icon, href }) => (
                 <li key={label}>
-                  <button
-                    type="button"
-                    disabled
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-[15px] text-text disabled:text-text-3 md:py-2 md:text-[13px]"
-                  >
-                    <Icon size={17} strokeWidth={1.75} />
-                    {label}
-                    <span className="ml-auto text-[11px] text-text-3">Soon</span>
-                  </button>
+                  {href ? (
+                    <Link href={hrefFor(href)} onClick={() => setOpen(false)} className={`${itemClass} text-text hover:bg-surface-2`}>
+                      <Icon size={17} strokeWidth={1.75} />
+                      {label}
+                    </Link>
+                  ) : (
+                    <span className={`${itemClass} text-text-3`}>
+                      <Icon size={17} strokeWidth={1.75} />
+                      {label}
+                      <span className="ml-auto text-[11px]">Soon</span>
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
